@@ -1,4 +1,11 @@
 import User from '../models/user.model.js'
+import BlackListToken from '../models/blackListToken.js';
+
+
+
+
+
+
 
 export const register = async (req, res) => {
   // Log the request to verify the endpoint is hit
@@ -36,6 +43,10 @@ export const register = async (req, res) => {
 
 
 
+
+
+
+
 export const login = async (req, res) => {
   // Log the request to verify the endpoint is hit
   try {
@@ -66,14 +77,43 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict'
-  });
-  res.status(200).json({ message: 'Logout successful' });
+
+
+
+
+
+
+export const logout = async (req, res) => {
+  try {
+    // Get token from middleware (already extracted and verified)
+    const token = req.token;
+    
+    if (token) {
+      // Add token to blacklist
+      const blacklistedToken = new BlackListToken({ token });
+      await blacklistedToken.save();
+    }
+
+    // Clear cookie
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'Strict'
+    });
+    
+    res.status(200).json({ message: 'Logout successful' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 };
+
+
+
+
+
+
+
+
 
 // Get user profile
 export const getProfile = async (req, res) => {
@@ -101,6 +141,15 @@ export const getProfile = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+
+
+
+
+
+
+
+
 
 // Update user profile
 export const updateProfile = async (req, res) => {
@@ -156,6 +205,21 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Change password
 export const changePassword = async (req, res) => {
   try {
@@ -192,6 +256,22 @@ export const changePassword = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Delete user account
 export const deleteAccount = async (req, res) => {
   try {
@@ -216,8 +296,17 @@ export const deleteAccount = async (req, res) => {
       return res.status(400).json({ message: 'Incorrect password' });
     }
 
+    // Get token from middleware (already extracted and verified)
+    const token = req.token;
+    
     // Delete user
     await User.findByIdAndDelete(userId);
+
+    // Add token to blacklist if it exists
+    if (token) {
+      const blacklistedToken = new BlackListToken({ token });
+      await blacklistedToken.save();
+    }
 
     // Clear cookie
     res.clearCookie('token', {

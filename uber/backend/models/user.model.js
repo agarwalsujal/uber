@@ -46,7 +46,7 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
 // Generate JWT token
 userSchema.methods.generateToken = function() {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: '1h'
+    expiresIn: '24h'
   });
 };
 
