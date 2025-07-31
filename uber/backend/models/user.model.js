@@ -38,10 +38,14 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
+
+
 // Compare password
 userSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+
 
 // Generate JWT token
 userSchema.methods.generateToken = function() {
@@ -49,6 +53,8 @@ userSchema.methods.generateToken = function() {
     expiresIn: '24h'
   });
 };
+
+
 
 // Generate refresh token
 
