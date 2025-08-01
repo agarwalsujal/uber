@@ -75,9 +75,22 @@ const loginCaptain = async (req, res) => {
 
 
 
+
+const getCaptainDetails = async (req, res) => {
+  try {
+    const captain = req.captain; // Captured from the isCaptainAuthenticated middleware
+    if (!captain) {
+      return res.status(404).json({ message: 'Captain not found' });
+    }
+    res.status(200).json({ message: 'Captain details retrieved successfully', captain });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 const logoutCaptain = async (req, res) => {
   try {
-    const captain=req.captain;
+    const captain = req.captain;
     // Add token to blacklist
     const blacklistedToken = new BlackListToken({ token: req.token });
     await blacklistedToken.save();
@@ -95,4 +108,4 @@ const logoutCaptain = async (req, res) => {
 };
 
 
-export { registerCaptain, loginCaptain, logoutCaptain };
+export { registerCaptain, loginCaptain, logoutCaptain, getCaptainDetails };
