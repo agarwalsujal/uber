@@ -1,10 +1,12 @@
-import registerCaptain from '../Controller/captain.controller.js';
+import {registerCaptain, loginCaptain,logoutCaptain } from '../Controller/captain.controller.js';
 import express from 'express';
-import isAuthenticated from '../middlewares/isAuthenticated.js';
+import {isCaptainAuthenticated} from '../middlewares/isAuthenticated.js';
 
 const router = express.Router();
 
 router.post('/register', registerCaptain);
+router.post('/login', loginCaptain);
+router.post('/logout', isCaptainAuthenticated, logoutCaptain);
 
 
 
